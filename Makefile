@@ -7,14 +7,12 @@ SWIG ?= swig
 
 all: check
 
-clean:
-	rm -f libguile-llvm.so llvm_wrap.o llvm_wrap.c
-
 check: libguile-llvm.so
 	guile -L . ./check.scm
 
 libguile-llvm.so: llvm_wrap.o
-	g++ llvm_wrap.o \
+	g++ \
+		llvm_wrap.o \
 		-shared -o libguile-llvm.so \
 		$(LLVM_LDFLAGS) \
 		$(GUILE_LDFLAGS)
@@ -29,3 +27,5 @@ llvm_wrap.o: llvm_wrap.c
 llvm_wrap.c: llvm.swig
 	$(SWIG) -guile -I$(LLVM_INCLUDE_DIR) -scmstub llvm.swig
 
+clean:
+	rm -f libguile-llvm.so llvm_wrap.o llvm_wrap.c
