@@ -3,6 +3,7 @@ LLVM_CFLAGS := $(shell llvm-config --cflags)
 LLVM_LDFLAGS := $(shell llvm-config --libs --system-libs --cflags --ldflags core jit mcjit interpreter linker native)
 GUILE_CFLAGS := $(shell pkg-config --cflags guile-2.0)
 GUILE_LDFLAGS := $(shell pkg-config --cflags --libs guile-2.0)
+SWIG ?= swig
 
 all: check
 
@@ -26,5 +27,5 @@ llvm_wrap.o: llvm_wrap.c
 		$(GUILE_CFLAGS)
 
 llvm_wrap.c: llvm.swig
-	swig -guile -I$(LLVM_INCLUDE_DIR) -scmstub llvm.swig
+	$(SWIG) -guile -I$(LLVM_INCLUDE_DIR) -scmstub llvm.swig
 
