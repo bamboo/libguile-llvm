@@ -38,10 +38,10 @@
 
 %inline %{
   type ## Ref * type ## ArrayCreate (int size) {
-    return (type ## Ref *) malloc(size * sizeof(type ## Ref));
+    return (type ## Ref *) SWIG_malloc(size * sizeof(type ## Ref));
   }
   void type ## ArrayDispose (type ## Ref *array) {
-    free(array);
+    SWIG_free(array);
   }
   type ## Ref type ## ArrayGet(type ## Ref *array, int index) {
     return array[index];
