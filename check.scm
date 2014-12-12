@@ -9,26 +9,26 @@
          array)
       (setter array i (car values)))))
 
-(define (->llvm-type-array values)
+(define (->LLVMTypeArray values)
   (->llvm-array LLVMTypeArrayCreate LLVMTypeArraySet values))
 
-(define (llvm-type-array . values)
-  (->llvm-type-array values))
+(define (LLVMTypeArray . values)
+  (->LLVMTypeArray values))
 
-(define (->llvm-value-array values)
+(define (->LLVMValueArray values)
   (->llvm-array LLVMValueArrayCreate LLVMValueArraySet values))
 
-(define (llvm-value-array . values)
-  (->llvm-value-array values))
+(define (LLVMValueArray . values)
+  (->LLVMValueArray values))
 
-(define (llvm-block-array . values)
+(define (LLVMBasicBlockArray . values)
   (->llvm-array LLVMBasicBlockArrayCreate LLVMBasicBlockArraySet values))
 
 (LLVMInitializeNativeTarget)
 
 (define mod (LLVMModuleCreateWithName "fac_module"))
 (define i32 (LLVMInt32Type))
-(define args (llvm-type-array i32))
+(define args (LLVMTypeArray i32))
 (define fac (LLVMAddFunction mod "fac" (LLVMFunctionType i32 args 1 #f)))
 (LLVMSetFunctionCallConv fac (LLVMCCallConv))
 
@@ -50,14 +50,14 @@
 (LLVMPositionBuilderAtEnd builder iffalse)
 (define n_minus (LLVMBuildSub builder n (LLVMConstInt i32 1 0) "n - 1"))
 
-(define call_fac_args (llvm-value-array n_minus))
+(define call_fac_args (LLVMValueArray n_minus))
 (define call_fac (LLVMBuildCall builder fac call_fac_args 1 "fac(n - 1)"))
 (define res_iffalse (LLVMBuildMul builder n call_fac "n * fac(n - 1)"))
 (LLVMBuildBr builder end)
 (LLVMPositionBuilderAtEnd builder end)
 (define res (LLVMBuildPhi builder i32 "result"))
-(define phi_vals (llvm-value-array res_iftrue res_iffalse))
-(define phi_blocks (llvm-block-array iftrue iffalse))
+(define phi_vals (LLVMValueArray res_iftrue res_iffalse))
+(define phi_blocks (LLVMBasicBlockArray iftrue iffalse))
 (LLVMAddIncoming res phi_vals phi_blocks 2)
 (LLVMBuildRet builder res)
 
