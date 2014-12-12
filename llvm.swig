@@ -16,11 +16,11 @@
 
 %define EXPORT_ARRAY_OF(type)
 
-%newobject type ## ArrayMake;
+%newobject type ## ArrayCreate;
 %delobject type ## ArrayDispose;
 
 %inline %{
-  type ## Ref * type ## ArrayMake (int size) {
+  type ## Ref * type ## ArrayCreate (int size) {
     return (type ## Ref *) malloc(size * sizeof(type ## Ref));
   }
   void type ## ArrayDispose (type ## Ref *array) {

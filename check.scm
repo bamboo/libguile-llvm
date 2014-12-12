@@ -10,19 +10,19 @@
       (setter array i (car values)))))
 
 (define (->llvm-type-array values)
-  (->llvm-array LLVMTypeArrayMake LLVMTypeArraySet values))
+  (->llvm-array LLVMTypeArrayCreate LLVMTypeArraySet values))
 
 (define (llvm-type-array . values)
   (->llvm-type-array values))
 
 (define (->llvm-value-array values)
-  (->llvm-array LLVMValueArrayMake LLVMValueArraySet values))
+  (->llvm-array LLVMValueArrayCreate LLVMValueArraySet values))
 
 (define (llvm-value-array . values)
   (->llvm-value-array values))
 
 (define (llvm-block-array . values)
-  (->llvm-array LLVMBasicBlockArrayMake LLVMBasicBlockArraySet values))
+  (->llvm-array LLVMBasicBlockArrayCreate LLVMBasicBlockArraySet values))
 
 (LLVMInitializeNativeTarget)
 
