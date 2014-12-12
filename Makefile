@@ -1,6 +1,6 @@
 LLVM_INCLUDE_DIR := $(shell llvm-config --includedir)
 LLVM_CFLAGS := $(shell llvm-config --cflags)
-LLVM_LDFLAGS := $(shell llvm-config --libs --system-libs --cflags --ldflags core)
+LLVM_LDFLAGS := $(shell llvm-config --libs --system-libs --cflags --ldflags core x86 mcjit)
 GUILE_CFLAGS := $(shell pkg-config --cflags guile-2.0)
 GUILE_LDFLAGS := $(shell pkg-config --cflags --libs guile-2.0)
 SWIG ?= swig
