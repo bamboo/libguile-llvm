@@ -62,3 +62,18 @@
 (LLVMBuildRet builder res)
 
 (LLVMDumpModule mod)
+
+(define pass-manager (LLVMCreatePassManager))
+
+;  (LLVMAddTargetData (LLVMGetExecutionEngineTargetData engine) pass-manager)
+
+(define passes (list
+                LLVMAddConstantPropagationPass
+                LLVMAddInstructionCombiningPass
+                LLVMAddPromoteMemoryToRegisterPass
+;;              LLVMAddDemoteMemoryToRegisterPass
+                LLVMAddGVNPass
+                LLVMAddCFGSimplificationPass))
+(for-each (lambda (pass) (pass pass-manager)) passes)
+(LLVMRunPassManager pass-manager mod)
+(LLVMDumpModule mod)
