@@ -72,3 +72,43 @@
 EXPORT_ARRAY_OF(LLVMType)
 EXPORT_ARRAY_OF(LLVMValue)
 EXPORT_ARRAY_OF(LLVMBasicBlock)
+EXPORT_ARRAY_OF(LLVMGenericValue)
+
+%typemap(in, numinputs=0) LLVMExecutionEngineRef *OutJIT {
+  LLVMExecutionEngineRef tmp = NULL;
+  $1 = &tmp;
+}
+
+%typemap(argout) LLVMExecutionEngineRef *OutJIT {
+  SWIG_APPEND_VALUE(SWIG_NewPointerObj(*$1, SWIGTYPE_p_LLVMOpaqueExecutionEngine, 0));
+}
+
+%typemap(in, numinputs=0) LLVMBool *OutSuccess {
+  LLVMBool tmp = 0;
+  $1 = &tmp;
+}
+
+%typemap(argout) LLVMBool *OutSuccess {
+  SWIG_APPEND_VALUE(scm_from_bool(*$1));
+}
+
+%typemap(in, numinputs=0) char **OutError {
+  char* temp = NULL;
+  $1 = &temp;
+}
+
+%typemap(argout) char **OutError {
+  SWIG_APPEND_VALUE(SWIG_str02scm(*$1));
+  if (*$1) LLVMDisposeMessage(*$1);
+}
+
+%multiple_values;
+%inline %{
+void LLVMCreateJITCompilerForModuleMV(LLVMModuleRef M,
+                                      unsigned OptLevel,
+                                      LLVMBool* OutSuccess,
+                                      char **OutError,
+                                      LLVMExecutionEngineRef *OutJIT) {
+  *OutSuccess = LLVMCreateJITCompilerForModule(OutJIT, M, OptLevel, OutError);
+}
+%}

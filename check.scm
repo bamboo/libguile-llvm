@@ -41,15 +41,23 @@
 
 (define pass-manager (LLVMCreatePassManager))
 
-;  (LLVMAddTargetData (LLVMGetExecutionEngineTargetData engine) pass-manager)
+(use-modules (srfi srfi-8))
+(receive (failed error-message engine)
+   (LLVMCreateJITCompilerForModuleMV mod 2)
+   (LLVMAddTargetData (LLVMGetExecutionEngineTargetData engine) pass-manager)
+   (for-each
+    (lambda (pass) (pass pass-manager))
+    (list
+     LLVMAddConstantPropagationPass
+     LLVMAddInstructionCombiningPass
+     LLVMAddPromoteMemoryToRegisterPass
+     ;; LLVMAddDemoteMemoryToRegisterPass
+     LLVMAddGVNPass
+     LLVMAddCFGSimplificationPass))
+   (LLVMRunPassManager pass-manager mod)
+   (LLVMDumpModule mod)
 
-(define passes (list
-                LLVMAddConstantPropagationPass
-                LLVMAddInstructionCombiningPass
-                LLVMAddPromoteMemoryToRegisterPass
-;;              LLVMAddDemoteMemoryToRegisterPass
-                LLVMAddGVNPass
-                LLVMAddCFGSimplificationPass))
-(for-each (lambda (pass) (pass pass-manager)) passes)
-(LLVMRunPassManager pass-manager mod)
-(LLVMDumpModule mod)
+   (let* [(input 10)
+          (exec-args (LLVMGenericValueArray (LLVMCreateGenericValueOfInt i32 input 0)))
+          (exec-res (LLVMRunFunction engine fac 1 exec-args))]
+     (format #t "fac(~d) = ~d\n" input (LLVMGenericValueToInt exec-res 0))))
