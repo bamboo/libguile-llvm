@@ -99,6 +99,9 @@ EXPORT_ARRAY_OF(LLVMGenericValue)
 
 %typemap(argout) char **OutError {
   SWIG_APPEND_VALUE(SWIG_str02scm(*$1));
+}
+
+%typemap(freearg) char **OutError {
   if (*$1) LLVMDisposeMessage(*$1);
 }
 
