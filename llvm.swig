@@ -74,8 +74,7 @@ EXPORT_ARRAY_OF(LLVMValue)
 EXPORT_ARRAY_OF(LLVMBasicBlock)
 EXPORT_ARRAY_OF(LLVMGenericValue)
 
-%typemap(in, numinputs=0) LLVMExecutionEngineRef *OutJIT {
-  LLVMExecutionEngineRef tmp = NULL;
+%typemap(in, numinputs=0) LLVMExecutionEngineRef *OutJIT (LLVMExecutionEngineRef tmp = NULL) {
   $1 = &tmp;
 }
 
@@ -83,8 +82,7 @@ EXPORT_ARRAY_OF(LLVMGenericValue)
   SWIG_APPEND_VALUE(SWIG_NewPointerObj(*$1, SWIGTYPE_p_LLVMOpaqueExecutionEngine, 0));
 }
 
-%typemap(in, numinputs=0) LLVMBool *OutFailed {
-  LLVMBool tmp = 0;
+%typemap(in, numinputs=0) LLVMBool *OutFailed (LLVMBool tmp = 0) {
   $1 = &tmp;
 }
 
@@ -92,8 +90,7 @@ EXPORT_ARRAY_OF(LLVMGenericValue)
   SWIG_APPEND_VALUE(scm_from_bool(*$1));
 }
 
-%typemap(in, numinputs=0) char **OutError {
-  char* temp = NULL;
+%typemap(in, numinputs=0) char **OutError (char* temp = NULL) {
   $1 = &temp;
 }
 
