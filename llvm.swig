@@ -83,12 +83,12 @@ EXPORT_ARRAY_OF(LLVMGenericValue)
   SWIG_APPEND_VALUE(SWIG_NewPointerObj(*$1, SWIGTYPE_p_LLVMOpaqueExecutionEngine, 0));
 }
 
-%typemap(in, numinputs=0) LLVMBool *OutSuccess {
+%typemap(in, numinputs=0) LLVMBool *OutFailed {
   LLVMBool tmp = 0;
   $1 = &tmp;
 }
 
-%typemap(argout) LLVMBool *OutSuccess {
+%typemap(argout) LLVMBool *OutFailed {
   SWIG_APPEND_VALUE(scm_from_bool(*$1));
 }
 
@@ -106,9 +106,9 @@ EXPORT_ARRAY_OF(LLVMGenericValue)
 %inline %{
 void LLVMCreateJITCompilerForModuleMV(LLVMModuleRef M,
                                       unsigned OptLevel,
-                                      LLVMBool* OutSuccess,
+                                      LLVMBool* OutFailed,
                                       char **OutError,
                                       LLVMExecutionEngineRef *OutJIT) {
-  *OutSuccess = LLVMCreateJITCompilerForModule(OutJIT, M, OptLevel, OutError);
+  *OutFailed = LLVMCreateJITCompilerForModule(OutJIT, M, OptLevel, OutError);
 }
 %}
