@@ -31,6 +31,17 @@
 
 %scheme %{ (load-extension "./libguile-llvm" "SWIG_init") %}
 
+%scheme %{
+(define (->llvm-array constructor setter values)
+  (let* [(size (length values))
+         (array (constructor size))]
+    (do [(i 0 (1+ i))
+         (values values (cdr values))]
+        ((= i size)
+         array)
+      (setter array i (car values)))))
+%}
+
 %define EXPORT_ARRAY_OF(type)
 
 %newobject type ## ArrayCreate;
@@ -49,6 +60,12 @@
   void type ## ArraySet(type ## Ref *array, int index, type ## Ref value) {
     array[index] = value;
   }
+%}
+
+%scheme %{
+(define (type ## Array . values)
+  (->llvm-array type ## ArrayCreate type ## ArraySet values))
+(export type ## Array)
 %}
 %enddef
 

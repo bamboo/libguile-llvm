@@ -1,29 +1,5 @@
 (use-modules (llvm))
 
-(define (->llvm-array constructor setter values)
-  (let* [(size (length values))
-         (array (constructor size))]
-    (do [(i 0 (1+ i))
-         (values values (cdr values))]
-        ((= i size)
-         array)
-      (setter array i (car values)))))
-
-(define (->LLVMTypeArray values)
-  (->llvm-array LLVMTypeArrayCreate LLVMTypeArraySet values))
-
-(define (LLVMTypeArray . values)
-  (->LLVMTypeArray values))
-
-(define (->LLVMValueArray values)
-  (->llvm-array LLVMValueArrayCreate LLVMValueArraySet values))
-
-(define (LLVMValueArray . values)
-  (->LLVMValueArray values))
-
-(define (LLVMBasicBlockArray . values)
-  (->llvm-array LLVMBasicBlockArrayCreate LLVMBasicBlockArraySet values))
-
 (LLVMInitializeNativeTarget)
 
 (define mod (LLVMModuleCreateWithName "fac_module"))
