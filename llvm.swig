@@ -62,14 +62,6 @@ void LLVMAddIncoming(LLVMValueRef,
   SWIG_APPEND_VALUE(SWIG_NewPointerObj(*$1, SWIGTYPE_p_LLVMOpaqueExecutionEngine, 0));
 }
 
-%typemap(in, numinputs=0) LLVMBool *OutFailed (LLVMBool tmp = 0) {
-  $1 = &tmp;
-}
-
-%typemap(argout) LLVMBool *OutFailed {
-  SWIG_APPEND_VALUE(scm_from_bool(*$1));
-}
-
 %typemap(in, numinputs=0) char **OutError (char* temp = NULL) {
   $1 = &temp;
 }
