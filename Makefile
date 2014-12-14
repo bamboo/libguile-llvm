@@ -24,7 +24,7 @@ llvm_wrap.o: llvm_wrap.c
 		$(LLVM_CFLAGS) \
 		$(GUILE_CFLAGS)
 
-llvm_wrap.c: llvm.swig
+llvm_wrap.c: llvm.swig llvm-arrays-as-vectors.i
 	$(SWIG) -guile -I$(LLVM_INCLUDE_DIR) -scmstub llvm.swig
 
 clean:

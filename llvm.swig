@@ -10,6 +10,37 @@
 
 %apply bool { LLVMBool };
 
+%import list-vector.i
+%import llvm-arrays-as-vectors.i
+
+%{
+#define SCM_TO_LLVMGenericValueRef(v) \
+  ((LLVMGenericValueRef)SWIG_MustGetPtr(v, SWIGTYPE_p_LLVMOpaqueGenericValue, 1, 0))
+%}
+TYPEMAP_LIST_VECTOR_INPUT(LLVMGenericValueRef, SCM_TO_LLVMGenericValueRef, LLVMGenericValueRef);
+
+LLVM_VECTOR_INPUT(Type);
+
+LLVM_VECTOR_INPUT(Value);
+
+LLVM_VECTOR_INPUT(BasicBlock);
+
+%apply (LLVMTypeRef *VECTORINPUT, unsigned VECTORLENINPUT) {
+       (LLVMTypeRef *ParamTypes, unsigned ParamCount)
+};
+
+%apply (LLVMValueRef *VECTORINPUT, unsigned VECTORLENINPUT) {
+       (LLVMValueRef *Args, unsigned NumArgs)
+};
+
+%apply (int VECTORLENINPUT, LLVMGenericValueRef *VECTORINPUT) {
+       (unsigned NumArgs, LLVMGenericValueRef *Args)
+};
+
+void LLVMAddIncoming(LLVMValueRef,
+                     LLVMValueRef *VECTORINPUT,
+                     LLVMBasicBlockRef *VECTORINPUT, unsigned VECTORLENINPUT);
+
 // these newobject/delobject pairs don't seem
 // to have any effect on the generated code
 // but let's keep it for documentation
@@ -22,57 +53,6 @@
 
 %newobject LLVMCreatePassManager;
 %delobject LLVMDisposePassManager;
-
-%include <llvm-c/Core.h>
-%include <llvm-c/Analysis.h>
-%include <llvm-c/ExecutionEngine.h>
-%include <llvm-c/Target.h>
-%include <llvm-c/Transforms/Scalar.h>
-
-%scheme %{ (load-extension "./libguile-llvm" "SWIG_init") %}
-
-%scheme %{
-(define (->llvm-array constructor setter values)
-  (let* [(size (length values))
-         (array (constructor size))]
-    (do [(i 0 (1+ i))
-         (values values (cdr values))]
-        ((= i size)
-         array)
-      (setter array i (car values)))))
-%}
-
-%define EXPORT_ARRAY_OF(type)
-
-%newobject type ## ArrayCreate;
-%delobject type ## ArrayDispose;
-
-%inline %{
-  type ## Ref * type ## ArrayCreate (int size) {
-    return (type ## Ref *) SWIG_malloc(size * sizeof(type ## Ref));
-  }
-  void type ## ArrayDispose (type ## Ref *array) {
-    SWIG_free(array);
-  }
-  type ## Ref type ## ArrayGet(type ## Ref *array, int index) {
-    return array[index];
-  }
-  void type ## ArraySet(type ## Ref *array, int index, type ## Ref value) {
-    array[index] = value;
-  }
-%}
-
-%scheme %{
-(define (type ## Array . values)
-  (->llvm-array type ## ArrayCreate type ## ArraySet values))
-(export type ## Array)
-%}
-%enddef
-
-EXPORT_ARRAY_OF(LLVMType)
-EXPORT_ARRAY_OF(LLVMValue)
-EXPORT_ARRAY_OF(LLVMBasicBlock)
-EXPORT_ARRAY_OF(LLVMGenericValue)
 
 %typemap(in, numinputs=0) LLVMExecutionEngineRef *OutJIT (LLVMExecutionEngineRef tmp = NULL) {
   $1 = &tmp;
@@ -103,12 +83,11 @@ EXPORT_ARRAY_OF(LLVMGenericValue)
 }
 
 %multiple_values;
-%inline %{
-void LLVMCreateJITCompilerForModuleMV(LLVMModuleRef M,
-                                      unsigned OptLevel,
-                                      LLVMBool* OutFailed,
-                                      char **OutError,
-                                      LLVMExecutionEngineRef *OutJIT) {
-  *OutFailed = LLVMCreateJITCompilerForModule(OutJIT, M, OptLevel, OutError);
-}
-%}
+
+%include <llvm-c/Core.h>
+%include <llvm-c/Analysis.h>
+%include <llvm-c/ExecutionEngine.h>
+%include <llvm-c/Target.h>
+%include <llvm-c/Transforms/Scalar.h>
+
+%scheme %{ (load-extension "./libguile-llvm" "SWIG_init") %}
